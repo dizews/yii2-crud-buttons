@@ -34,14 +34,14 @@ If you want to get more understandable titles of buttons you should set ```model
 ```php
 <?= CrudButtons::widget(['model' => $model,
     'modelName' => function ($actionId) {
+        $count = 1;
         switch ($actionId) {
             case 'multi-update':
             case 'multi-delete':
-                return $this->context->modelName(10);
+                $count = 10;
                 break;
-            default:
-                return $this->context->modelName();
         }
+        Yii::t('app', '{n, plural, =1{User} other{Users}}', ['n' => $count])
     }
 ]); ?>
 ```
