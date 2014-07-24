@@ -38,7 +38,7 @@ If you want to get more understandable titles of buttons you should set ```model
         if ($actionId == 'multi-update' || $actionId == 'multi-delete') {
             $count = 10; //any number for plural
         }
-        Yii::t('app', '{n, plural, =1{User} other{Users}}', ['n' => $count])
+        return Yii::t('app', '{n, plural, =1{User} other{Users}}', ['n' => $count])
     }
 ]); ?>
 ```
