@@ -26,13 +26,13 @@ General Usage
 -------------
 
 ```php
-<?= CrudButtons::widget(['model' => $model]); ?>
+<?= CrudButtons::widget(['model' => isset($model) ? $model : null]); ?>
 ```
 
 If you want to get more understandable titles of buttons you should set ```modelName```.
 
 ```php
-<?= CrudButtons::widget(['model' => $model,
+<?= CrudButtons::widget(['model' => isset($model) ? $model : null,
     'modelName' => function ($actionId) {
         $count = 1;
         if ($actionId == 'multi-update' || $actionId == 'multi-delete') {
