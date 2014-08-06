@@ -15,6 +15,6 @@
         "yiisoft/yii2-bootstrap": "*"
     },
     "autoload": {
-        "psr-4": {"dizews\\widgets\\": ""}
+        "psr-4": {"dizews\\": ""}
     }
 }
