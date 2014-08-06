@@ -19,7 +19,8 @@ class CrudButtons extends Widget
     public $actionId;
 
     /**
-     * @var array List of buttons actions.
+     * @var array List of buttons actions. ('index', 'create', 'update', 'delete', 'multi-update', 'multi-delete')
+     *
      */
     public $actions = [];
 
@@ -58,6 +59,10 @@ class CrudButtons extends Widget
      */
     public $modelName;
 
+    /**
+     * @var Closure Function can check whether action exist or not.
+     */
+    public $hasAction;
 
     /**
      * @inheritdoc
@@ -89,7 +94,7 @@ class CrudButtons extends Widget
      */
     public function run()
     {
-        if ($this->actionId != $this->actions['create']) {
+        if ($this->hasAction($this->actions['create']) && $this->actionId != $this->actions['create']) {
             echo ' '. Html::a($this->createTemplate, [$this->actions['create']],
                 [
                     'class' => 'btn btn-primary',
@@ -101,7 +106,7 @@ class CrudButtons extends Widget
         }
 
         if ($this->model) {
-            if ($this->actionId != $this->actions['update']) {
+            if ($this->hasAction($this->actions['update']) && $this->actionId != $this->actions['update']) {
                 echo ' '. Html::a($this->updateTemplate, [$this->actions['update'], 'id' => $this->model->id],
                     [
                         'class' => 'btn btn-primary',
@@ -113,23 +118,25 @@ class CrudButtons extends Widget
                 );
             }
 
-            $modelName = $this->getModelName($this->actions['delete']);
-            echo ' '. Html::a($this->deleteTemplate, [$this->actions['delete'], 'id' => $this->model->id],
-                [
-                    'class' => 'btn btn-danger',
-                    'title' => Yii::t('crud-buttons', 'Delete {modelName} #{id}', [
-                            'modelName' => $modelName,
-                            'id' => $this->model->id
-                        ]),
-                    'data' => [
-                        'method' => 'post',
-                        'confirm' => Yii::t('crud-buttons', 'Are you sure you want to delete this {modelName} #{id}', [
-                            'modelName' => $modelName,
-                            'id' => $this->model->id
-                        ])
+            if ($this->hasAction($this->actions['delete'])) {
+                $modelName = $this->getModelName($this->actions['delete']);
+                echo ' '. Html::a($this->deleteTemplate, [$this->actions['delete'], 'id' => $this->model->id],
+                    [
+                        'class' => 'btn btn-danger',
+                        'title' => Yii::t('crud-buttons', 'Delete {modelName} #{id}', [
+                                'modelName' => $modelName,
+                                'id' => $this->model->id
+                            ]),
+                        'data' => [
+                            'method' => 'post',
+                            'confirm' => Yii::t('crud-buttons', 'Are you sure you want to delete this {modelName} #{id}', [
+                                'modelName' => $modelName,
+                                'id' => $this->model->id
+                            ])
+                        ]
                     ]
-                ]
-            );
+                );
+            }
         } elseif ($this->actionId == $this->actions['index']) {
             if ($this->hasAction($this->actions['multi-update'])) {
                 echo ' '. Html::a($this->multiUpdateTemplate, [$this->actions['multi-update'], 'ids[]' => ''],
@@ -173,6 +180,10 @@ class CrudButtons extends Widget
      */
     protected function hasAction($id)
     {
+        if ($this->hasAction instanceof \Closure) {
+            return call_user_func($this->hasAction, $id);
+        }
+
         $actionMap = Yii::$app->controller->actions();
         if (isset($actionMap[$id])) {
             return true;
