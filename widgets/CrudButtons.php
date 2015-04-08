@@ -106,13 +106,17 @@ class CrudButtons extends Widget
         }
 
         if ($this->model) {
+            $model = $this->model;
+            $pks = $model::primaryKey();
+            $pkField = is_array($pks) ? current($pks) : $pks;
+
             if ($this->hasAction($this->actions['update']) && $this->actionId != $this->actions['update']) {
-                echo ' '. Html::a($this->updateTemplate, [$this->actions['update'], 'id' => $this->model->id],
+                echo ' '. Html::a($this->updateTemplate, [$this->actions['update'], 'id' => $this->model->$pkField],
                     [
                         'class' => 'btn btn-primary',
                         'title' => Yii::t('crud-buttons', 'Update {modelName} #{id}', [
                             'modelName' => $this->getModelName($this->actions['update']),
-                            'id' => $this->model->id
+                            'id' => $this->model->$pkField
                         ]),
                     ]
                 );
@@ -120,18 +124,18 @@ class CrudButtons extends Widget
 
             if ($this->hasAction($this->actions['delete'])) {
                 $modelName = $this->getModelName($this->actions['delete']);
-                echo ' '. Html::a($this->deleteTemplate, [$this->actions['delete'], 'id' => $this->model->id],
+                echo ' '. Html::a($this->deleteTemplate, [$this->actions['delete'], 'id' => $this->model->$pkField],
                     [
                         'class' => 'btn btn-danger',
                         'title' => Yii::t('crud-buttons', 'Delete {modelName} #{id}', [
                                 'modelName' => $modelName,
-                                'id' => $this->model->id
+                                'id' => $this->model->$pkField
                             ]),
                         'data' => [
                             'method' => 'post',
                             'confirm' => Yii::t('crud-buttons', 'Are you sure you want to delete this {modelName} #{id}', [
                                 'modelName' => $modelName,
-                                'id' => $this->model->id
+                                'id' => $this->model->$pkField
                             ])
                         ]
                     ]
@@ -211,4 +215,4 @@ class CrudButtons extends Widget
     }
 
 
-} 
+}
