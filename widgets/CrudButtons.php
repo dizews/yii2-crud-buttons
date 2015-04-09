@@ -4,6 +4,7 @@ namespace dizews\widgets;
 
 use Yii;
 use yii\bootstrap\Widget;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 class CrudButtons extends Widget
@@ -82,11 +83,13 @@ class CrudButtons extends Widget
         if (!$this->actionId) {
             $this->actionId = Yii::$app->controller->action->id;
         }
-        if (!$this->actions) {
-            $actions = ['index', 'create', 'update', 'delete', 'multi-update', 'multi-delete'];
-            $this->actions = array_combine($actions, $actions);
-        }
 
+        $actions = ['index', 'create', 'update', 'delete', 'multi-update', 'multi-delete'];
+        if (!$this->actions && $this->actions !== false) {
+            $this->actions = array_combine($actions, $actions);
+        } elseif ($this->actions && !ArrayHelper::isAssociative($this->actions)) {
+            $this->actions = array_combine($this->actions, $this->actions);
+        }
     }
 
     /**
@@ -94,7 +97,9 @@ class CrudButtons extends Widget
      */
     public function run()
     {
-        if ($this->hasAction($this->actions['create']) && $this->actionId != $this->actions['create']) {
+        if (isset($this->actions['create'])
+            && $this->hasAction($this->actions['create']) && $this->actionId != $this->actions['create']
+        ) {
             echo ' '. Html::a($this->createTemplate, [$this->actions['create']],
                 [
                     'class' => 'btn btn-primary',
@@ -110,7 +115,9 @@ class CrudButtons extends Widget
             $pks = $model::primaryKey();
             $pkField = is_array($pks) ? current($pks) : $pks;
 
-            if ($this->hasAction($this->actions['update']) && $this->actionId != $this->actions['update']) {
+            if (isset($this->actions['update'])
+                && $this->hasAction($this->actions['update']) && $this->actionId != $this->actions['update']
+            ) {
                 echo ' '. Html::a($this->updateTemplate, [$this->actions['update'], 'id' => $this->model->$pkField],
                     [
                         'class' => 'btn btn-primary',
@@ -122,7 +129,7 @@ class CrudButtons extends Widget
                 );
             }
 
-            if ($this->hasAction($this->actions['delete'])) {
+            if (isset($this->actions['delete']) && $this->hasAction($this->actions['delete'])) {
                 $modelName = $this->getModelName($this->actions['delete']);
                 echo ' '. Html::a($this->deleteTemplate, [$this->actions['delete'], 'id' => $this->model->$pkField],
                     [
@@ -141,8 +148,8 @@ class CrudButtons extends Widget
                     ]
                 );
             }
-        } elseif ($this->actionId == $this->actions['index']) {
-            if ($this->hasAction($this->actions['multi-update'])) {
+        } elseif (isset($this->actions['index']) && $this->actionId == $this->actions['index']) {
+            if (isset($this->actions['multi-update']) && $this->hasAction($this->actions['multi-update'])) {
                 echo ' '. Html::a($this->multiUpdateTemplate, [$this->actions['multi-update'], 'ids[]' => ''],
                     [
                         'class' => 'btn btn-primary btn-multi-update',
@@ -154,7 +161,7 @@ class CrudButtons extends Widget
                 );
             }
 
-            if ($this->hasAction($this->actions['multi-delete'])) {
+            if (isset($this->actions['multi-delete']) && $this->hasAction($this->actions['multi-delete'])) {
                 $modelName = $this->getModelName($this->actions['multi-delete']);
                 echo ' '. Html::a($this->multiDeleteTemplate, [$this->actions['multi-delete'], 'ids[]' => ''],
                     [
