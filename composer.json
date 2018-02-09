@@ -3,7 +3,7 @@
     "description": "It is a widget for Yii2 framework which control a crud buttons.",
     "keywords": ["yii2", "widget", "crud"],
     "type": "yii2-extension",
-    "license": "BSD 3-Clause",
+    "license": "BSD-3-Clause",
     "authors": [
         {
             "name": "Vladimir Zbrailov",
